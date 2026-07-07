@@ -655,12 +655,12 @@ function initVideoScrub(){
 
   if(!video)return;
 
-  video.addEventListener('loadedmetadata',()=>{
-    video.currentTime=0.1;
-  });
-
-  // preload trigger
+  video.preload='auto';
   video.load();
+  video.addEventListener('loadedmetadata',()=>{
+    video.currentTime=0.01;
+    video.play().then(()=>{video.pause();video.currentTime=0.01}).catch(()=>{});
+  });
 
   function onScroll(){
     if(isScrubbing)return;

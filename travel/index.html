@@ -607,7 +607,11 @@ function initScrollVideo(){
   // preload
   video.preload='auto';
   video.load();
-  video.addEventListener('loadedmetadata',()=>{scrub()},true);
+  video.addEventListener('loadedmetadata',()=>{
+    video.currentTime=0.01;
+    video.play().then(()=>{video.pause();video.currentTime=0.01}).catch(()=>{});
+    scrub();
+  },true);
   video.addEventListener('canplay',()=>{scrub()},true);
 
   window.addEventListener('scroll',onScroll);

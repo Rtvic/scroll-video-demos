@@ -524,17 +524,24 @@
 
         // ============ VIDEO SCRUBBING ============
         const video = document.getElementById('scrub-video');
+        const pinContainer = document.getElementById('hero');
         const progressBar = document.getElementById('progressBar');
         const texts = { 1: document.getElementById('ht1'), 2: document.getElementById('ht2'), 3: document.getElementById('ht3') };
         const scrollHint = document.getElementById('scrollHint');
         let ticking = false;
 
-        video.addEventListener('loadedmetadata', () => { video.currentTime = 0.01; });
+        video.preload = 'auto';
+        video.load();
+        video.addEventListener('loadedmetadata', () => {
+            video.currentTime = 0.01;
+            video.play().then(() => { video.pause(); video.currentTime = 0.01; }).catch(() => {});
+        });
+        video.addEventListener('canplay', () => { if (!ticking) { window.requestAnimationFrame(scrub); ticking = true; } });
 
         function scrub() {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const p = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
+            const rect = pinContainer.getBoundingClientRect();
+            const totalHeight = pinContainer.offsetHeight - window.innerHeight;
+            const p = totalHeight > 0 ? Math.max(0, Math.min(Math.abs(rect.top) / totalHeight, 1)) : 0;
 
             video.currentTime = p * video.duration;
             progressBar.style.width = (p * 100) + '%';
@@ -553,7 +560,7 @@
             ticking = false;
         }
 
-        window.addEventListener('scroll', () => { if (!ticking) { window.requestAnimationFrame(scrub); ticking = true; } });
+        window.addEventListener('scroll', () => { if (!ticking) { window.requestAnimationFrame(scrub); ticking = true; } }, { passive: true });
 
         // ============ SET MIN DATE ============
         document.getElementById('resDate').min = new Date().toISOString().split('T')[0];
@@ -562,7 +569,6 @@
         renderMenu();
         renderTestimonials();
         checkAdminRoute();
-        scrub();
     </script>
 </body>
 </html>

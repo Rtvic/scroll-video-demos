@@ -601,29 +601,26 @@ function showToast(message, type = 'success') {
     const text2 = document.getElementById('text2');
     const text3 = document.getElementById('text3');
     const scrollHint = document.getElementById('scrollHint');
+    const pinContainer = document.querySelector('.pin-container');
     let ticking = false;
-    let videoReady = false;
 
+    video.preload = 'auto';
+    video.load();
     video.addEventListener('loadedmetadata', () => {
         video.currentTime = 0.01;
-        videoReady = true;
+        video.play().then(() => { video.pause(); video.currentTime = 0.01; }).catch(() => {});
     });
-
-    video.addEventListener('error', () => {
-        console.warn('Video load error, using fallback');
-    });
+    video.addEventListener('canplay', () => { if (!ticking) { window.requestAnimationFrame(scrub); ticking = true; } });
 
     function scrub() {
-        const scrollTop = window.scrollY;
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = docHeight > 0 ? Math.min(Math.max(scrollTop / docHeight, 0), 1) : 0;
+        const rect = pinContainer.getBoundingClientRect();
+        const totalHeight = pinContainer.offsetHeight - window.innerHeight;
+        const p = totalHeight > 0 ? Math.max(0, Math.min(Math.abs(rect.top) / totalHeight, 1)) : 0;
 
-        if (videoReady && video.duration) {
-            video.currentTime = progress * video.duration;
-        }
-        progressBar.style.width = (progress * 100) + '%';
+        video.currentTime = p * video.duration;
+        progressBar.style.width = (p * 100) + '%';
 
-        const t = progress;
+        const t = p;
 
         text1.style.opacity = t < 0.25 ? 1 - t / 0.25 : 0;
         text1.style.transform = `translateY(${t * 40}px) scale(${1 - t * 0.1})`;
