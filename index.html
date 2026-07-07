@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll Video Scrubbing — Demos Profesionales 2026</title>
+    <meta name="description" content="4 sitios web completos con scroll video scrubbing + CRM integrado. Hotel, Restaurante, Gimnasio, Agencia de Viajes.">
+    <meta property="og:title" content="Scroll Video Scrubbing — Demos Profesionales">
+    <meta property="og:description" content="Sitios web completos con video que avanza con el scroll y CRM integrado.">
+    <meta property="og:type" content="website">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #050505; color: #fff; min-height: 100vh; }
+        ::selection { background: rgba(255,255,255,0.15); }
+
+        .hero { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 70%); pointer-events: none; }
+        .hero .badge { display: inline-block; padding: 0.4rem 1.2rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 100px; font-size: 0.75rem; color: rgba(255,255,255,0.5); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 2rem; }
+        .hero h1 { font-size: clamp(2.8rem,7vw,6rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+        .hero h1 span { background: linear-gradient(135deg, #E63946 0%, #FF6B35 30%, #D4AF37 60%, #00B4D8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: clamp(1rem,1.8vw,1.2rem); color: rgba(255,255,255,0.4); max-width: 550px; margin-top: 1.5rem; line-height: 1.7; font-weight: 300; }
+        .hero .tech-stack { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2.5rem; }
+        .hero .tech-stack span { padding: 0.3rem 0.8rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 0.5rem; font-size: 0.7rem; color: rgba(255,255,255,0.35); letter-spacing: 0.05em; }
+
+        .demos { max-width: 1200px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; padding-bottom: 6rem; }
+
+        .demo-card { position: relative; border-radius: 1.5rem; overflow: hidden; background: #0a0a0a; border: 1px solid rgba(255,255,255,0.06); transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), border-color 0.5s; cursor: pointer; text-decoration: none; color: #fff; display: flex; flex-direction: column; }
+        .demo-card:hover { transform: translateY(-10px) scale(1.02); border-color: rgba(255,255,255,0.12); }
+        .demo-card .preview { width: 100%; aspect-ratio: 9/16; overflow: hidden; position: relative; background: #050505; }
+        .demo-card .preview video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: opacity 0.6s, transform 0.6s; }
+        .demo-card:hover .preview video { opacity: 0.8; transform: scale(1.05); }
+        .demo-card .preview .overlay-preview { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 50%); }
+        .demo-card .content { padding: 1.5rem; position: relative; }
+        .demo-card .content .category { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.35); margin-bottom: 0.5rem; }
+        .demo-card .content .color-bar { width: 2rem; height: 3px; border-radius: 2px; margin-bottom: 0.8rem; }
+        .demo-card .content h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+        .demo-card .content p { color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 0.4rem; line-height: 1.5; }
+        .demo-card .content .features { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+        .demo-card .content .features span { padding: 0.2rem 0.6rem; background: rgba(255,255,255,0.04); border-radius: 0.3rem; font-size: 0.6rem; color: rgba(255,255,255,0.3); letter-spacing: 0.03em; }
+        .demo-card .content .arrow { position: absolute; bottom: 1.5rem; right: 1.5rem; width: 2rem; height: 2rem; border-radius: 50%; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; transition: background 0.3s, transform 0.3s; font-size: 0.9rem; }
+        .demo-card:hover .content .arrow { background: rgba(255,255,255,0.12); transform: translateX(3px); }
+
+        .footer { text-align: center; padding: 3rem 2rem; border-top: 1px solid rgba(255,255,255,0.04); }
+        .footer p { color: rgba(255,255,255,0.2); font-size: 0.8rem; }
+
+        @media (max-width: 768px) {
+            .hero { min-height: 60vh; }
+            .demos { grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; }
+        }
+        @media (max-width: 480px) {
+            .demos { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="badge">2026 · Técnica Cinematográfica</div>
+        <h1>Scroll Video<br><span>Scrubbing</span></h1>
+        <p>4 sitios web completos con video que avanza y retrocede con el scroll, CRM integrado en localStorage, y diseño profesional listo para producción.</p>
+        <div class="tech-stack">
+            <span>HTML5 · CSS3 · JS</span>
+            <span>localStorage CRM</span>
+            <span>ffmpeg g=1</span>
+            <span>requestAnimationFrame</span>
+            <span>GitHub Pages</span>
+        </div>
+    </section>
+
+    <div class="demos">
+        <a href="hotel/" class="demo-card">
+            <div class="preview">
+                <video src="videos/hotel.mp4" muted loop playsinline></video>
+                <div class="overlay-preview"></div>
+            </div>
+            <div class="content">
+                <div class="category">Hotel Boutique</div>
+                <div class="color-bar" style="background:#D4AF37;"></div>
+                <h2>El Secreto del Mar</h2>
+                <p>Hotel de lujo con catálogo de habitaciones, reservas online y panel admin.</p>
+                <div class="features"><span>Scroll Video</span><span>Catálogo</span><span>Reservas</span><span>CRM</span></div>
+                <div class="arrow">→</div>
+            </div>
+        </a>
+
+        <a href="restaurant/" class="demo-card">
+            <div class="preview">
+                <video src="videos/restaurant.mp4" muted loop playsinline></video>
+                <div class="overlay-preview"></div>
+            </div>
+            <div class="content">
+                <div class="category">Restaurante · Lounge</div>
+                <div class="color-bar" style="background:#E63946;"></div>
+                <h2>FUEGO</h2>
+                <p>Cocina de autor con menú interactivo, reservación de mesas y dashboard de ventas.</p>
+                <div class="features"><span>Scroll Video</span><span>Menú Digital</span><span>Reservas</span><span>CRM</span></div>
+                <div class="arrow">→</div>
+            </div>
+        </a>
+
+        <a href="gym/" class="demo-card">
+            <div class="preview">
+                <video src="videos/gym.mp4" muted loop playsinline></video>
+                <div class="overlay-preview"></div>
+            </div>
+            <div class="content">
+                <div class="category">Fitness · Gimnasio</div>
+                <div class="color-bar" style="background:#FF6B35;"></div>
+                <h2>FUSION GYM</h2>
+                <p>Alto rendimiento con planes, horarios, entrenadores y captación de leads.</p>
+                <div class="features"><span>Scroll Video</span><span>Planes</span><span>Horarios</span><span>CRM</span></div>
+                <div class="arrow">→</div>
+            </div>
+        </a>
+
+        <a href="travel/" class="demo-card">
+            <div class="preview">
+                <video src="videos/travel.mp4" muted loop playsinline></video>
+                <div class="overlay-preview"></div>
+            </div>
+            <div class="content">
+                <div class="category">Agencia de Viajes</div>
+                <div class="color-bar" style="background:#00B4D8;"></div>
+                <h2>WANDERLUST</h2>
+                <p>Paquetes turísticos, cotizador interactivo y gestión de clientes potenciales.</p>
+                <div class="features"><span>Scroll Video</span><span>Paquetes</span><span>Cotizador</span><span>CRM</span></div>
+                <div class="arrow">→</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="footer"><p>Scroll Video Scrubbing Demos © 2026 · Todos con CRM integrado · Subido a GitHub Pages</p></div>
+
+    <script>
+        document.querySelectorAll('.demo-card video').forEach(v => {
+            const io = new IntersectionObserver(entries => {
+                entries.forEach(e => { if (e.isIntersecting) v.play(); else v.pause(); });
+            }, { threshold: 0.3 });
+            io.observe(v);
+        });
+    </script>
+</body>
+</html>

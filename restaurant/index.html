@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUEGO — Cocina de Autor & Lounge | Reservaciones</title>
+    <meta name="description" content="Restaurante de alta cocina con experiencia cinematográfica. Reserva tu mesa y descubre sabores que enamoran.">
+    <meta property="og:title" content="FUEGO — Cocina de Autor & Lounge">
+    <meta property="og:description" content="Sabores que enamoran. Scroll para descubrir el arte culinario.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1200">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" href="../videos/restaurant.mp4" as="video" type="video/mp4">
+    <style>
+        :root { --red: #E63946; --red-dark: #B71C1C; --gold: #C5A55A; --bg: #0d0808; --surface: #1a0f0f; --text: #fff; --text-muted: #888; --border: rgba(255,255,255,0.06); --font-serif: 'Cormorant Garamond', serif; --font-sans: 'Inter', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--text); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--red); z-index: 1000; transition: width 0.05s; pointer-events: none; }
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 999; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; transition: background 0.3s, padding 0.3s; }
+        nav.scrolled { background: rgba(13,8,8,0.95); backdrop-filter: blur(20px); padding: 0.7rem 2rem; border-bottom: 1px solid var(--border); }
+        nav .logo { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700; color: var(--red); text-decoration: none; }
+        nav .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
+        nav .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.05em; transition: color 0.3s; font-weight: 400; }
+        nav .nav-links a:hover { color: #fff; }
+        nav .nav-links .btn-nav { padding: 0.5rem 1.3rem; background: var(--red); color: #fff; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; }
+        nav .nav-links .btn-nav:hover { background: #ff4757; color: #fff; }
+        .menu-toggle { display: none; flex-direction: column; gap: 4px; cursor: pointer; background: none; border: none; padding: 4px; }
+        .menu-toggle span { width: 24px; height: 2px; background: #fff; transition: 0.3s; border-radius: 2px; }
+
+        .pin-container { position: relative; height: 500vh; }
+        .pin-element { position: sticky; top: 0; height: 100vh; width: 100%; overflow: hidden; }
+        #scrub-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+        .gradient-overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 35%, transparent 65%, rgba(0,0,0,0.5) 100%); pointer-events: none; }
+        .warm-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 30%, rgba(230,57,70,0.12) 0%, transparent 60%); pointer-events: none; }
+        .hero-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem; pointer-events: none; }
+        .hero-text { position: absolute; transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+        .ht1 { bottom: 28%; }
+        .ht1 h1 { font-family: var(--font-serif); font-size: clamp(4rem,12vw,8rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1; color: var(--red); text-shadow: 0 0 60px rgba(230,57,70,0.3); }
+        .ht1 .sub { font-size: clamp(0.8rem,1.2vw,1rem); color: rgba(255,255,255,0.5); letter-spacing: 0.25em; text-transform: uppercase; margin-top: 0.5rem; }
+        .ht2 { top: 25%; max-width: 550px; }
+        .ht2 h2 { font-family: var(--font-serif); font-size: clamp(2rem,4vw,3rem); font-weight: 600; font-style: italic; line-height: 1.3; }
+        .ht2 p { font-size: clamp(0.9rem,1.3vw,1.05rem); color: rgba(255,255,255,0.6); margin-top: 1rem; line-height: 1.7; }
+        .ht3 { bottom: 28%; }
+        .ht3 h3 { font-family: var(--font-serif); font-size: clamp(1.5rem,3vw,2.2rem); font-weight: 600; }
+        .ht3 .menu-items { display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
+        .ht3 .menu-item { text-align: center; }
+        .ht3 .menu-item .dish { font-family: var(--font-serif); font-size: clamp(1.2rem,1.8vw,1.5rem); font-weight: 600; }
+        .ht3 .menu-item .desc { font-size: 0.75rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.2rem; }
+        .scroll-hint { position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.3); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; transition: opacity 0.8s; z-index: 10; }
+        .scroll-hint .flame { font-size: 1.5rem; animation: flicker 1.5s ease-in-out infinite; }
+        @keyframes flicker { 0%,100% { transform: scale(1) rotate(0deg); opacity: 0.6; } 25% { transform: scale(1.1) rotate(-3deg); opacity: 1; } 75% { transform: scale(0.95) rotate(2deg); opacity: 0.7; } }
+
+        section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+        section .tag { display: inline-block; padding: 0.3rem 1rem; border: 1px solid rgba(230,57,70,0.3); border-radius: 100px; font-size: 0.7rem; color: var(--red); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; }
+        section h2 { font-family: var(--font-serif); font-size: clamp(2rem,4vw,3rem); font-weight: 600; line-height: 1.2; margin-bottom: 1rem; }
+        section .desc { color: var(--text-muted); max-width: 600px; line-height: 1.7; font-size: 1rem; }
+
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-top: 3rem; }
+        .about-grid img { width: 100%; border-radius: 1rem; height: 400px; object-fit: cover; }
+        .about-grid .about-text p { color: var(--text-muted); line-height: 1.8; margin-bottom: 1rem; font-size: 0.95rem; }
+        .about-grid .stats { display: flex; gap: 3rem; margin-top: 2rem; }
+        .about-grid .stat h3 { font-family: var(--font-serif); font-size: 2.5rem; color: var(--red); }
+        .about-grid .stat p { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .menu-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 2rem 0; }
+        .menu-filters button { padding: 0.5rem 1.2rem; border: 1px solid var(--border); border-radius: 2rem; background: transparent; color: rgba(255,255,255,0.6); font-size: 0.85rem; cursor: pointer; transition: 0.3s; font-family: var(--font-sans); }
+        .menu-filters button:hover { border-color: rgba(230,57,70,0.5); color: #fff; }
+        .menu-filters button.active { background: var(--red); border-color: var(--red); color: #fff; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .menu-card { padding: 1.5rem; border-radius: 1rem; background: var(--surface); border: 1px solid var(--border); transition: transform 0.3s, border-color 0.3s; }
+        .menu-card:hover { transform: translateY(-2px); border-color: rgba(230,57,70,0.3); }
+        .menu-card .menu-cat { font-size: 0.7rem; color: var(--red); text-transform: uppercase; letter-spacing: 0.1em; }
+        .menu-card h3 { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 600; margin: 0.3rem 0; }
+        .menu-card p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; }
+        .menu-card .price { display: inline-block; margin-top: 0.8rem; font-size: 1.1rem; font-weight: 600; color: var(--gold); }
+
+        .reservation-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-top: 3rem; }
+        .reservation-form { display: flex; flex-direction: column; gap: 1rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-size: 0.8rem; color: rgba(255,255,255,0.6); letter-spacing: 0.05em; }
+        .form-group input, .form-group select, .form-group textarea { padding: 0.8rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; color: #fff; font-size: 0.9rem; font-family: var(--font-sans); transition: border-color 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--red); }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .btn-primary { padding: 0.9rem 2.5rem; background: var(--red); color: #fff; border: none; border-radius: 2rem; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; font-family: var(--font-sans); }
+        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(230,57,70,0.3); }
+        .btn-outline { padding: 0.7rem 1.5rem; background: transparent; color: #fff; border: 1px solid var(--border); border-radius: 2rem; font-size: 0.85rem; cursor: pointer; transition: 0.3s; font-family: var(--font-sans); text-decoration: none; display: inline-block; }
+        .btn-outline:hover { border-color: var(--red); color: var(--red); }
+        .reservation-info { display: flex; flex-direction: column; gap: 1.5rem; justify-content: center; }
+        .reservation-info .info-item { display: flex; align-items: center; gap: 1rem; }
+        .reservation-info .info-item .icon { font-size: 1.5rem; width: 3rem; text-align: center; }
+        .reservation-info .info-item h4 { font-size: 1rem; font-weight: 600; }
+        .reservation-info .info-item p { color: var(--text-muted); font-size: 0.85rem; }
+
+        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 3rem; }
+        .gallery-grid .gallery-item { aspect-ratio: 1; border-radius: 1rem; overflow: hidden; position: relative; cursor: pointer; }
+        .gallery-grid .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .gallery-grid .gallery-item:hover img { transform: scale(1.08); }
+
+        .testimonials { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+        .testimonial-card { padding: 2rem; border-radius: 1rem; background: var(--surface); border: 1px solid var(--border); }
+        .testimonial-card .stars { color: var(--gold); margin-bottom: 0.8rem; letter-spacing: 0.2em; }
+        .testimonial-card p { color: var(--text-muted); line-height: 1.7; font-size: 0.9rem; font-style: italic; }
+        .testimonial-card .author { display: flex; align-items: center; gap: 0.8rem; margin-top: 1.5rem; }
+        .testimonial-card .author .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
+        .testimonial-card .author h4 { font-size: 0.9rem; font-weight: 600; }
+        .testimonial-card .author span { font-size: 0.75rem; color: var(--text-muted); }
+
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-top: 3rem; }
+        .contact-map { border-radius: 1rem; overflow: hidden; height: 350px; background: var(--surface); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.9rem; border: 1px solid var(--border); }
+
+        footer { padding: 4rem 2rem; border-top: 1px solid var(--border); text-align: center; }
+        footer .logo { font-family: var(--font-serif); font-size: 2rem; font-weight: 700; color: var(--red); }
+        footer .social { display: flex; gap: 1.5rem; justify-content: center; margin: 2rem 0; }
+        footer .social a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 0.85rem; transition: color 0.3s; }
+        footer .social a:hover { color: var(--red); }
+        footer p { color: var(--text-muted); font-size: 0.8rem; }
+
+        /* Admin Panel */
+        .admin-panel { display: none; min-height: 100vh; background: var(--bg); padding: 6rem 2rem 2rem; }
+        .admin-panel.active { display: block; }
+        .admin-login { max-width: 400px; margin: 10rem auto; text-align: center; }
+        .admin-login h2 { font-family: var(--font-serif); font-size: 2rem; }
+        .admin-login form { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+        .admin-login .error { color: var(--red); font-size: 0.85rem; display: none; }
+        .admin-dashboard { max-width: 1200px; margin: 0 auto; }
+        .admin-dashboard h2 { font-family: var(--font-serif); font-size: 2rem; }
+        .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 1rem; margin: 2rem 0; }
+        .admin-stat { padding: 1.5rem; background: var(--surface); border-radius: 1rem; border: 1px solid var(--border); }
+        .admin-stat h3 { font-size: 2rem; font-weight: 700; color: var(--red); }
+        .admin-stat p { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.3rem; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .admin-table th { text-align: left; padding: 0.8rem; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+        .admin-table td { padding: 0.8rem; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
+        .admin-table .status { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.7rem; background: rgba(230,57,70,0.15); color: var(--red); }
+        .admin-table .status.confirmed { background: rgba(72,199,142,0.15); color: #48C78E; }
+        .btn-danger { padding: 0.3rem 0.8rem; background: transparent; border: 1px solid rgba(230,57,70,0.3); color: var(--red); border-radius: 0.5rem; cursor: pointer; font-size: 0.75rem; transition: 0.3s; }
+        .btn-danger:hover { background: var(--red); color: #fff; }
+        .btn-logout { padding: 0.5rem 1.5rem; background: transparent; border: 1px solid var(--border); color: #fff; border-radius: 2rem; cursor: pointer; font-size: 0.85rem; }
+        .btn-logout:hover { border-color: var(--red); color: var(--red); }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 2rem; background: #48C78E; color: #fff; border-radius: 0.5rem; font-size: 0.9rem; z-index: 1000; transform: translateY(100px); opacity: 0; transition: 0.4s cubic-bezier(0.16,1,0.3,1); pointer-events: none; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        @media (max-width: 768px) {
+            .pin-container { height: 400vh; }
+            nav { padding: 0.8rem 1.2rem; }
+            nav .nav-links { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(13,8,8,0.98); flex-direction: column; justify-content: center; gap: 2.5rem; }
+            nav .nav-links.open { display: flex; }
+            nav .nav-links a { font-size: 1.1rem; }
+            .menu-toggle { display: flex; }
+            .about-grid, .reservation-grid, .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .gallery-grid { grid-template-columns: 1fr 1fr; }
+            .about-grid img { height: 250px; }
+            .admin-table { font-size: 0.75rem; }
+            .admin-table th, .admin-table td { padding: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav id="navbar">
+        <a href="#" class="logo">FUEGO</a>
+        <button class="menu-toggle" id="menuToggle" aria-label="Menú"><span></span><span></span><span></span></button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#about">Historia</a></li>
+            <li><a href="#menu">Menú</a></li>
+            <li><a href="#reservation">Reservar</a></li>
+            <li><a href="#gallery">Galería</a></li>
+            <li><a href="#contact">Contacto</a></li>
+            <li><a href="#admin" class="btn-nav">Admin</a></li>
+        </ul>
+    </nav>
+
+    <div class="pin-container" id="hero">
+        <div class="pin-element">
+            <video id="scrub-video" src="../videos/restaurant.mp4" muted playsinline preload="auto" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1080' height='1920'%3E%3Crect fill='%230d0808' width='1080' height='1920'/%3E%3C/svg%3E"></video>
+            <div class="gradient-overlay"></div>
+            <div class="warm-glow"></div>
+            <div class="hero-overlay">
+                <div class="hero-text ht1" id="ht1">
+                    <h1>FUEGO</h1>
+                    <div class="sub">Cocina de Autor · Lounge</div>
+                </div>
+                <div class="hero-text ht2" id="ht2">
+                    <h2>Sabores que enamoran</h2>
+                    <p>Una experiencia gastronómica donde el fuego transforma ingredientes en arte.</p>
+                </div>
+                <div class="hero-text ht3" id="ht3">
+                    <h3>Descubre nuestro menú</h3>
+                    <div class="menu-items">
+                        <div class="menu-item"><div class="dish">Wagyu Tataki</div><div class="desc">Fuego &amp; Sésamo</div></div>
+                        <div class="menu-item"><div class="dish">Risotto al Nero</div><div class="desc">Tinta de Calamar</div></div>
+                        <div class="menu-item"><div class="dish">Tarta de Fuego</div><div class="desc">Chocolate &amp; Chili</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-hint" id="scrollHint"><div class="flame">🔥</div><span>Saborea</span></div>
+        </div>
+    </div>
+
+    <section id="about">
+        <span class="tag">Nuestra Historia</span>
+        <h2>El fuego como<br>lenguaje universal</h2>
+        <div class="about-grid">
+            <img src="https://images.pexels.com/photos/4253312/pexels-photo-4253312.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Cocina FUEGO" loading="lazy">
+            <div class="about-text">
+                <p>Nacimos en 2018 con una visión clara: transformar la cocina de autor en una experiencia donde cada sentido despierte. Nuestro chef ejecutivo, Carlos Mendoza, formado en el Basque Culinary Center, lidera un equipo apasionado por los sabores intensos.</p>
+                <p>Trabajamos exclusivamente con productores locales y pesca del día. Cada plato es una conversación entre la tradición mexicana y las técnicas más vanguardistas.</p>
+                <div class="stats">
+                    <div class="stat"><h3>7</h3><p>Años de historia</p></div>
+                    <div class="stat"><h3>15K</h3><p>Comensales al año</p></div>
+                    <div class="stat"><h3>4.9</h3><p>Rating Google</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="menu">
+        <span class="tag">Carta</span>
+        <h2>Nuestros platos</h2>
+        <p class="desc">Cada creación es una explosión de sabor. Selecciona tu categoría y déjate sorprender.</p>
+        <div class="menu-filters" id="menuFilters">
+            <button class="active" data-cat="all">Todos</button>
+            <button data-cat="entradas">Entradas</button>
+            <button data-cat="fuertes">Platos Fuertes</button>
+            <button data-cat="pastas">Pastas</button>
+            <button data-cat="postres">Postres</button>
+            <button data-cat="bebidas">Bebidas</button>
+        </div>
+        <div class="menu-grid" id="menuGrid"></div>
+    </section>
+
+    <section id="reservation">
+        <span class="tag">Reserva</span>
+        <h2>Aparta tu mesa</h2>
+        <p class="desc">Déjanos consentirte. Selecciona fecha, hora y número de comensales.</p>
+        <div class="reservation-grid">
+            <form class="reservation-form" id="reservationForm">
+                <div class="form-row">
+                    <div class="form-group"><label>Nombre completo</label><input type="text" id="resName" required placeholder="Tu nombre"></div>
+                    <div class="form-group"><label>Teléfono</label><input type="tel" id="resPhone" required placeholder="+52 999 123 4567"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Email</label><input type="email" id="resEmail" required placeholder="correo@ejemplo.com"></div>
+                    <div class="form-group"><label>Comensales</label><select id="resGuests"><option value="1">1 persona</option><option value="2" selected>2 personas</option><option value="3">3 personas</option><option value="4">4 personas</option><option value="5">5 personas</option><option value="6">6+ personas</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Fecha</label><input type="date" id="resDate" required></div>
+                    <div class="form-group"><label>Hora</label><input type="time" id="resTime" required></div>
+                </div>
+                <div class="form-group"><label>Notas (opcional)</label><textarea id="resNotes" placeholder="Alergias, ocasión especial..."></textarea></div>
+                <button type="submit" class="btn-primary">Confirmar reservación</button>
+            </form>
+            <div class="reservation-info">
+                <div class="info-item"><div class="icon">📍</div><div><h4>Ubicación</h4><p>Av. Paseo de Montejo 456, Mérida, Yucatán</p></div></div>
+                <div class="info-item"><div class="icon">🕐</div><div><h4>Horarios</h4><p>Martes a Domingo: 1:00 PM - 11:00 PM</p></div></div>
+                <div class="info-item"><div class="icon">📞</div><div><h4>Contacto</h4><p>+52 999 123 4567</p></div></div>
+                <div class="info-item"><div class="icon">👔</div><div><h4>Código de vestimenta</h4><p>Elegante casual. Se requiere reservación.</p></div></div>
+                <button class="btn-outline" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">Ver menú →</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery">
+        <span class="tag">Galería</span>
+        <h2>Ambiente & Platos</h2>
+        <p class="desc">Cada imagen captura la esencia de FUEGO.</p>
+        <div class="gallery-grid">
+            <div class="gallery-item"><img src="https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Plato FUEGO" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.pexels.com/photos/4253312/pexels-photo-4253312.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Cocina" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.pexels.com/photos/262047/pexels-photo-262047.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Interior" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Bar" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.pexels.com/photos/1482803/pexels-photo-1482803.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Postre" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.pexels.com/photos/2253643/pexels-photo-2253643.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Terraza" loading="lazy"></div>
+        </div>
+    </section>
+
+    <section id="testimonials">
+        <span class="tag">Testimonios</span>
+        <h2>Lo que dicen de nosotros</h2>
+        <div class="testimonials" id="testimonialsGrid"></div>
+    </section>
+
+    <section id="contact">
+        <span class="tag">Contacto</span>
+        <h2>Háblanos</h2>
+        <p class="desc">Estamos listos para atenderte. Escríbenos o visítanos.</p>
+        <div class="contact-grid">
+            <form class="reservation-form" id="contactForm">
+                <div class="form-group"><label>Nombre</label><input type="text" id="contactName" required placeholder="Tu nombre"></div>
+                <div class="form-group"><label>Email</label><input type="email" id="contactEmail" required placeholder="correo@ejemplo.com"></div>
+                <div class="form-group"><label>Mensaje</label><textarea id="contactMsg" required placeholder="Cuéntanos..."></textarea></div>
+                <button type="submit" class="btn-primary">Enviar mensaje</button>
+            </form>
+            <div class="contact-map"><div style="text-align:center;padding:2rem;"><div style="font-size:3rem;margin-bottom:1rem;">📍</div><h4>Av. Paseo de Montejo 456</h4><p style="color:var(--text-muted);margin-top:0.5rem;">Mérida, Yucatán, México</p><p style="color:var(--text-muted);font-size:0.85rem;">Abierto Mar-Dom 1PM - 11PM</p></div></div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="logo">FUEGO</div>
+        <div class="social"><a href="#">Instagram</a><a href="#">Facebook</a><a href="#">TikTok</a><a href="#">Google Maps</a></div>
+        <p>Cocina de Autor & Lounge © 2026 · Hecho con 🔥 en Mérida</p>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- ADMIN PANEL -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-login" id="adminLogin">
+            <h2>Admin FUEGO</h2>
+            <form id="loginForm">
+                <div class="form-group"><label>Usuario</label><input type="text" id="adminUser" value="admin" required></div>
+                <div class="form-group"><label>Contraseña</label><input type="password" id="adminPass" required></div>
+                <p class="error" id="loginError">Credenciales incorrectas</p>
+                <button type="submit" class="btn-primary">Ingresar</button>
+            </form>
+        </div>
+        <div class="admin-dashboard" id="adminDashboard" style="display:none;">
+            <div class="admin-header"><h2>Dashboard FUEGO</h2><button class="btn-logout" onclick="logout()">Cerrar sesión</button></div>
+            <div class="admin-stats" id="adminStats"></div>
+            <h3 style="margin-top:2rem;font-family:var(--font-serif);">Reservaciones Recientes</h3>
+            <div style="overflow-x:auto;"><table class="admin-table"><thead><tr><th>Cliente</th><th>Teléfono</th><th>Fecha</th><th>Hora</th><th>Comensales</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="adminTableBody"></tbody></table></div>
+        </div>
+    </div>
+
+    <script>
+        // ============ DATABASE ============
+        const DB = { get(k, d=[]) { try { const v = localStorage.getItem('fuego_'+k); return v ? JSON.parse(v) : d; } catch(e) { return d; } }, set(k, v) { localStorage.setItem('fuego_'+k, JSON.stringify(v)); }, add(k, item) { const items = DB.get(k); items.push({...item, id: Date.now(), createdAt: new Date().toISOString()}); DB.set(k, items); return item; }, remove(k, id) { DB.set(k, DB.get(k).filter(i => i.id !== id)); } };
+
+        // ============ MENU DATA ============
+        const menuData = [
+            { cat: 'entradas', name: 'Wagyu Tataki', desc: 'Lomo fino sellado con sésamo, emulsión de yuzu y jengibre fresco.', price: '$320' },
+            { cat: 'entradas', name: 'Ostiones al Fuego', desc: 'Media docena de ostiones gratinados con mantequilla de chipotle y queso manchego.', price: '$280' },
+            { cat: 'entradas', name: 'Tartar de Atún', desc: 'Cortado a cuchillo, aguacate, alcaparras y tuétano ahumado.', price: '$350' },
+            { cat: 'fuertes', name: 'Risotto al Nero', desc: 'Arroz cremoso con tinta de calamar, calamar salteado y aioli de azafrán.', price: '$420' },
+            { cat: 'fuertes', name: 'Catch of the Day', desc: 'Pescado del día a la talla con puré de camote negro y salsa de tamarindo.', price: '$480' },
+            { cat: 'fuertes', name: 'Cordero al Fuego', desc: 'Pierna de cordero braseada 12 hrs, reducción de vino tinto y hierbas finas.', price: '$550' },
+            { cat: 'pastas', name: 'Pappardelle al Ragú', desc: 'Pasta artesanal con ragú de res Wagyu, parmesano y trufa negra.', price: '$380' },
+            { cat: 'pastas', name: 'Gnocchi de Papa Azul', desc: 'Gnocchi artesanales, crema de hongo silvestre y aceite de trufa.', price: '$360' },
+            { cat: 'postres', name: 'Tarta de Fuego', desc: 'Chocolate oscuro 72%, ganache de chili pasilla y helado de vainilla.', price: '$220' },
+            { cat: 'postres', name: 'Crema Catalana', desc: 'Con toque de Xtabentún y cítricos caramelizados.', price: '$190' },
+            { cat: 'bebidas', name: 'Mezcal Old Fashioned', desc: 'Mezcal artesanal, bitter de naranja y toque de ahumado.', price: '$250' },
+            { cat: 'bebidas', name: 'Margarita del Chef', desc: 'Tequila reposado, lima, agave y chamoy de la casa.', price: '$220' },
+            { cat: 'bebidas', name: 'Vino de la Casa', desc: 'Selección del chef: tinto, blanco o rosado por copa.', price: '$280' }
+        ];
+
+        // ============ TESTIMONIALS DATA ============
+        const testimonialData = [
+            { name: 'Ana Sofía García', initial: 'A', text: 'La mejor experiencia gastronómica que hemos tenido en Mérida. El risotto al nero es simplemente espectacular. Volveremos cada mes.', rating: 5 },
+            { name: 'Carlos Mendoza', initial: 'C', text: 'El ambiente es inigualable. La combinación del diseño interior con la música y el servicio crean una atmósfera mágica.', rating: 5 },
+            { name: 'María Fernández', initial: 'M', text: 'Celebramos nuestro aniversario aquí y fue perfecto. El cordero al fuego y el postre de chocolate con chili fueron increíbles.', rating: 5 },
+            { name: 'Roberto Díaz', initial: 'R', text: 'FUEGO es el nuevo estandarte de la cocina yucateca contemporánea. La carta de mezcales es de las mejores que he visto.', rating: 5 },
+            { name: 'Laura Peón', initial: 'L', text: 'Un rincón mágico en Mérida. Cada visita es una sorpresa, el menú de temporada siempre trae propuestas innovadoras.', rating: 5 },
+            { name: 'Pedro Cetina', initial: 'P', text: 'El servicio es impecable. Te hacen sentir especial desde que cruzas la puerta. La tarta de fuego es el mejor postre de Yucatán.', rating: 5 }
+        ];
+
+        // ============ RENDER MENU ============
+        function renderMenu(cat = 'all') {
+            const grid = document.getElementById('menuGrid');
+            const items = cat === 'all' ? menuData : menuData.filter(m => m.cat === cat);
+            grid.innerHTML = items.map(m => `
+                <div class="menu-card">
+                    <div class="menu-cat">${m.cat === 'entradas' ? 'Entradas' : m.cat === 'fuertes' ? 'Platos Fuertes' : m.cat === 'pastas' ? 'Pastas' : m.cat === 'postres' ? 'Postres' : 'Bebidas'}</div>
+                    <h3>${m.name}</h3>
+                    <p>${m.desc}</p>
+                    <div class="price">${m.price}</div>
+                </div>
+            `).join('');
+        }
+
+        // ============ RENDER TESTIMONIALS ============
+        function renderTestimonials() {
+            const grid = document.getElementById('testimonialsGrid');
+            grid.innerHTML = testimonialData.map(t => `
+                <div class="testimonial-card">
+                    <div class="stars">${'★'.repeat(t.rating)}</div>
+                    <p>"${t.text}"</p>
+                    <div class="author">
+                        <div class="avatar">${t.initial}</div>
+                        <div><h4>${t.name}</h4></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============ MENU FILTERS ============
+        document.getElementById('menuFilters').addEventListener('click', e => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            document.querySelectorAll('.menu-filters button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderMenu(btn.dataset.cat);
+        });
+
+        // ============ RESERVATION CRM ============
+        document.getElementById('reservationForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const reservation = {
+                name: document.getElementById('resName').value,
+                phone: document.getElementById('resPhone').value,
+                email: document.getElementById('resEmail').value,
+                guests: document.getElementById('resGuests').value,
+                date: document.getElementById('resDate').value,
+                time: document.getElementById('resTime').value,
+                notes: document.getElementById('resNotes').value,
+                status: 'confirmed'
+            };
+            DB.add('reservations', reservation);
+            showToast('✅ Reservación confirmada! Te esperamos en FUEGO.');
+            e.target.reset();
+        });
+
+        // ============ CONTACT FORM ============
+        document.getElementById('contactForm').addEventListener('submit', e => {
+            e.preventDefault();
+            DB.add('messages', { name: document.getElementById('contactName').value, email: document.getElementById('contactEmail').value, message: document.getElementById('contactMsg').value });
+            showToast('✅ Mensaje recibido. Te contactaremos pronto.');
+            e.target.reset();
+        });
+
+        // ============ ADMIN ============
+        document.getElementById('loginForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+            if (user === 'admin' && pass === 'admin123') {
+                localStorage.setItem('fuego_admin', 'true');
+                showAdminDashboard();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        });
+
+        function showAdminDashboard() {
+            document.getElementById('adminLogin').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            renderAdmin();
+        }
+
+        function logout() {
+            localStorage.removeItem('fuego_admin');
+            document.getElementById('adminLogin').style.display = 'block';
+            document.getElementById('adminDashboard').style.display = 'none';
+            document.getElementById('adminPass').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        function renderAdmin() {
+            const reservations = DB.get('reservations');
+            const messages = DB.get('messages');
+            document.getElementById('adminStats').innerHTML = `
+                <div class="admin-stat"><h3>${reservations.length}</h3><p>Reservaciones</p></div>
+                <div class="admin-stat"><h3>${reservations.filter(r => r.guests >= 4).length}</h3><p>Grupos grandes</p></div>
+                <div class="admin-stat"><h3>${messages.length}</h3><p>Mensajes</p></div>
+                <div class="admin-stat"><h3>${new Date().toLocaleDateString('es-MX', { month: 'long' })}</h3><p>Mes actual</p></div>
+            `;
+            const tbody = document.getElementById('adminTableBody');
+            if (reservations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">No hay reservaciones aún</td></tr>';
+            } else {
+                tbody.innerHTML = reservations.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).map(r => `
+                    <tr>
+                        <td><strong>${r.name}</strong></td>
+                        <td>${r.phone}</td>
+                        <td>${r.date}</td>
+                        <td>${r.time}</td>
+                        <td>${r.guests}</td>
+                        <td><span class="status confirmed">Confirmada</span></td>
+                        <td><button class="btn-danger" onclick="deleteRes(${r.id})">✕</button></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function deleteRes(id) {
+            if (confirm('¿Cancelar esta reservación?')) {
+                DB.remove('reservations', id);
+                renderAdmin();
+                showToast('🗑️ Reservación cancelada');
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // ============ ADMIN ROUTING ============
+        function checkAdminRoute() {
+            const isAdmin = window.location.hash === '#admin';
+            if (isAdmin) {
+                document.querySelectorAll('section, footer, .pin-container, nav, .progress-bar').forEach(el => el.style.display = 'none');
+                document.getElementById('adminPanel').classList.add('active');
+                if (localStorage.getItem('fuego_admin') === 'true') showAdminDashboard();
+                else { document.getElementById('adminLogin').style.display = 'block'; document.getElementById('adminDashboard').style.display = 'none'; }
+                window.scrollTo(0,0);
+            } else {
+                document.querySelectorAll('section, footer, .pin-container, nav, .progress-bar').forEach(el => el.style.display = '');
+                document.getElementById('adminPanel').classList.remove('active');
+            }
+        }
+        window.addEventListener('hashchange', checkAdminRoute);
+
+        // ============ NAV SCROLL ============
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 80);
+        });
+
+        // ============ MOBILE MENU ============
+        document.getElementById('menuToggle').addEventListener('click', () => {
+            document.getElementById('navLinks').classList.toggle('open');
+        });
+        document.querySelectorAll('#navLinks a').forEach(a => a.addEventListener('click', () => {
+            document.getElementById('navLinks').classList.remove('open');
+        }));
+
+        // ============ VIDEO SCRUBBING ============
+        const video = document.getElementById('scrub-video');
+        const progressBar = document.getElementById('progressBar');
+        const texts = { 1: document.getElementById('ht1'), 2: document.getElementById('ht2'), 3: document.getElementById('ht3') };
+        const scrollHint = document.getElementById('scrollHint');
+        let ticking = false;
+
+        video.addEventListener('loadedmetadata', () => { video.currentTime = 0.01; });
+
+        function scrub() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const p = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
+
+            video.currentTime = p * video.duration;
+            progressBar.style.width = (p * 100) + '%';
+
+            texts[1].style.opacity = p < 0.25 ? 1 - p / 0.25 : 0;
+            texts[1].style.transform = `translateY(${p * 40}px)`;
+
+            texts[2].style.opacity = p < 0.2 ? 0 : p < 0.35 ? (p - 0.2) / 0.15 : p < 0.65 ? 1 : Math.max(0, 1 - (p - 0.65) / 0.1);
+            texts[2].style.transform = `translateY(${p < 0.2 ? 30 : 0}px)`;
+
+            texts[3].style.opacity = p < 0.55 ? 0 : (p - 0.55) / 0.15;
+            texts[3].style.transform = `translateY(${p < 0.55 ? 30 : 0}px)`;
+
+            scrollHint.style.opacity = p < 0.05 ? 1 - p / 0.05 : 0;
+
+            ticking = false;
+        }
+
+        window.addEventListener('scroll', () => { if (!ticking) { window.requestAnimationFrame(scrub); ticking = true; } });
+
+        // ============ SET MIN DATE ============
+        document.getElementById('resDate').min = new Date().toISOString().split('T')[0];
+
+        // ============ INIT ============
+        renderMenu();
+        renderTestimonials();
+        checkAdminRoute();
+        scrub();
+    </script>
+</body>
+</html>

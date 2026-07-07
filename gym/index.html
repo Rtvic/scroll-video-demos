@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUSION GYM — Entrenamiento de Élite</title>
+    <meta name="description" content="Gimnasio de alto rendimiento con scroll cinematográfico. El video avanza con tu movimiento.">
+    <meta property="og:title" content="FUSION GYM — Entrenamiento de Élite">
+    <meta property="og:description" content="Supera tus límites. Cada scroll, una repetición.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1200">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#fff;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0a0a0a}
+::-webkit-scrollbar-thumb{background:linear-gradient(#FF6B35,#FF3366);border-radius:3px}
+
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#FF6B35,#FF3366);z-index:100;transition:width .05s;pointer-events:none}
+
+nav{position:sticky;top:0;z-index:99;background:rgba(10,10,10,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.05);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between}
+nav .logo{font-family:'Archivo Black',sans-serif;font-size:1.4rem;background:linear-gradient(135deg,#FF6B35,#FF3366);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.03em}
+nav .logo span{-webkit-text-fill-color:#fff;font-family:'Inter',sans-serif;font-weight:300;font-size:.7rem;letter-spacing:.2em;display:block;margin-top:-4px}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:rgba(255,255,255,.55);text-decoration:none;font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;transition:color .3s}
+.nav-links a:hover{color:#fff}
+.nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.nav-toggle span{width:24px;height:2px;background:#fff;border-radius:2px;transition:.3s}
+.nav-toggle.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.nav-toggle.active span:nth-child(2){opacity:0}
+.nav-toggle.active span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+.pin-container{position:relative;height:500vh}
+.pin-element{position:sticky;top:64px;height:calc(100vh - 64px);width:100%;overflow:hidden}
+#scrub-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform}
+.gradient-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,.8) 0%,transparent 50%,rgba(0,0,0,.5) 100%);pointer-events:none}
+.grit-overlay{position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");pointer-events:none}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:2rem;pointer-events:none}
+.overlay-text{position:absolute;transition:opacity .5s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);width:100%;padding:0 2rem}
+.overlay-1{bottom:22%}
+.overlay-1 .brand{font-family:'Archivo Black',sans-serif;font-size:clamp(4rem,14vw,9rem);letter-spacing:-.06em;line-height:1;background:linear-gradient(135deg,#FF6B35 0%,#FF3366 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none}
+.overlay-1 .tagline{font-size:clamp(.7rem,1.3vw,1rem);color:rgba(255,255,255,.45);letter-spacing:.3em;text-transform:uppercase;margin-top:.5rem}
+.overlay-2{top:28%}
+.overlay-2 h2{font-size:clamp(2rem,4.5vw,3.5rem);font-weight:900;letter-spacing:-.03em;line-height:1.2;text-transform:uppercase}
+.overlay-2 h2 em{font-style:normal;background:linear-gradient(135deg,#FF6B35,#FF3366);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.overlay-2 p{font-size:clamp(.85rem,1.3vw,1.1rem);color:rgba(255,255,255,.55);margin-top:1rem;max-width:450px;line-height:1.6}
+.overlay-3{bottom:28%}
+.overlay-3 .stat{display:inline-block;font-size:clamp(2.5rem,5vw,4.5rem);font-weight:900;letter-spacing:-.03em;line-height:1}
+.overlay-3 .stat span{display:block;font-size:.7rem;font-weight:400;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase;margin-top:.2rem}
+.overlay-3 .stats{display:flex;gap:3rem;justify-content:center}
+.scroll-hint{position:absolute;bottom:5%;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.3);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:.4rem;transition:opacity .8s}
+.scroll-hint .arrow{width:1px;height:1.5rem;background:rgba(255,255,255,.3);position:relative;animation:pulseArrow 1.5s ease-in-out infinite}
+.scroll-hint .arrow::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:rgba(255,255,255,.3)}
+@keyframes pulseArrow{0%,100%{transform:scaleY(1);opacity:.5}50%{transform:scaleY(1.3);opacity:1}}
+
+.section{padding:5rem 2rem;max-width:1200px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:3.5rem}
+.section-header h2{font-family:'Archivo Black',sans-serif;font-size:clamp(1.8rem,4vw,3rem);letter-spacing:-.03em;text-transform:uppercase}
+.section-header h2 em{font-style:normal;background:linear-gradient(135deg,#FF6B35,#FF3366);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.section-header p{color:rgba(255,255,255,.45);margin-top:.8rem;font-size:.95rem}
+
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.about-text p{color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:1rem;font-size:.95rem}
+.about-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.about-stat{text-align:center;padding:1.5rem;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.02)}
+.about-stat .num{font-family:'Archivo Black',sans-serif;font-size:2rem;background:linear-gradient(135deg,#FF6B35,#FF3366);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.about-stat .label{color:rgba(255,255,255,.45);font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;margin-top:.3rem}
+
+.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.plan-card{padding:2.5rem 2rem;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.02);transition:transform .3s,border-color .3s;position:relative;display:flex;flex-direction:column}
+.plan-card:hover{transform:translateY(-4px);border-color:#FF6B35}
+.plan-card.featured{border-color:#FF6B35;background:linear-gradient(180deg,rgba(255,107,53,.08) 0%,transparent 100%)}
+.plan-card.featured .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#FF6B35,#FF3366);padding:.3rem 1.2rem;border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.plan-card .plan-name{font-size:.75rem;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,255,255,.4);font-weight:600}
+.plan-card .plan-price{font-family:'Archivo Black',sans-serif;font-size:2.5rem;margin-top:.5rem}
+.plan-card .plan-price small{font-size:.9rem;font-weight:400;color:rgba(255,255,255,.4);font-family:'Inter',sans-serif}
+.plan-card .plan-desc{color:rgba(255,255,255,.5);font-size:.85rem;margin-top:.5rem;line-height:1.5}
+.plan-card .plan-features{list-style:none;margin-top:1.5rem;flex:1}
+.plan-card .plan-features li{padding:.5rem 0;font-size:.85rem;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:.6rem;border-bottom:1px solid rgba(255,255,255,.04)}
+.plan-card .plan-features li::before{content:'✓';background:linear-gradient(135deg,#FF6B35,#FF3366);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700}
+.plan-btn{display:block;margin-top:1.5rem;padding:.8rem;text-align:center;background:linear-gradient(135deg,#FF6B35,#FF3366);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:.85rem;cursor:pointer;text-decoration:none;transition:transform .3s,box-shadow .3s;text-transform:uppercase;letter-spacing:.05em}
+.plan-btn:hover{transform:scale(1.02);box-shadow:0 0 30px rgba(255,107,53,.25)}
+
+.schedule-wrapper{overflow-x:auto;border:1px solid rgba(255,255,255,.06);border-radius:12px}
+.schedule-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.schedule-table thead{background:linear-gradient(135deg,rgba(255,107,53,.12),rgba(255,51,102,.12))}
+.schedule-table th{padding:.8rem .6rem;text-align:center;font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:.7rem;color:rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.06)}
+.schedule-table td{padding:.7rem .5rem;text-align:center;border-bottom:1px solid rgba(255,255,255,.04);color:rgba(255,255,255,.55)}
+.schedule-table td.time{color:#fff;font-weight:700;white-space:nowrap}
+.schedule-table td .class-name{color:#fff;font-weight:600}
+.schedule-table td .trainer-name{display:block;font-size:.7rem;color:rgba(255,255,255,.35);margin-top:2px}
+.schedule-table tbody tr:hover td{background:rgba(255,255,255,.03)}
+.schedule-table td.highlight{background:rgba(255,107,53,.08);border-radius:4px}
+.schedule-table td.highlight .class-name{background:linear-gradient(135deg,#FF6B35,#FF3366);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+.trainers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem}
+.trainer-card{padding:0;border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.02);transition:transform .3s;display:flex;flex-direction:column}
+.trainer-card:hover{transform:translateY(-4px)}
+.trainer-card img{width:100%;height:220px;object-fit:cover;display:block}
+.trainer-card .trainer-body{padding:1.2rem 1.5rem 1.5rem}
+.trainer-card .trainer-name{font-weight:700;font-size:1rem}
+.trainer-card .trainer-specialty{font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;background:linear-gradient(135deg,#FF6B35,#FF3366);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-top:.3rem}
+.trainer-card .trainer-desc{color:rgba(255,255,255,.5);font-size:.85rem;margin-top:.6rem;line-height:1.5}
+
+.testimonials-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
+.testimonial-card{padding:2rem;border:1px solid rgba(255,255,255,.06);border-radius:16px;background:rgba(255,255,255,.02)}
+.testimonial-card .stars{color:#FF6B35;font-size:.9rem;letter-spacing:2px;margin-bottom:.8rem}
+.testimonial-card blockquote{color:rgba(255,255,255,.65);line-height:1.7;font-size:.9rem;font-style:italic}
+.testimonial-card .author{display:flex;align-items:center;gap:.8rem;margin-top:1.2rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.05)}
+.testimonial-card .author img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+.testimonial-card .author .name{font-weight:600;font-size:.85rem}
+.testimonial-card .author .title{color:rgba(255,255,255,.4);font-size:.75rem}
+
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem}
+.contact-info h3{font-size:1.3rem;font-weight:700;margin-bottom:.5rem}
+.contact-info h3 em{font-style:normal;background:linear-gradient(135deg,#FF6B35,#FF3366);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.contact-info p{color:rgba(255,255,255,.55);font-size:.9rem;line-height:1.7;margin-bottom:1.5rem}
+.contact-info .info-item{display:flex;align-items:flex-start;gap:.8rem;margin-bottom:1rem;font-size:.9rem}
+.contact-info .info-item .icon{font-size:1.1rem;min-width:24px}
+.contact-info .info-item .text{color:rgba(255,255,255,.6);line-height:1.5}
+.contact-form{display:flex;flex-direction:column;gap:1rem}
+.contact-form input,.contact-form select,.contact-form textarea{padding:.9rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;outline:none;transition:border-color .3s;width:100%}
+.contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{border-color:#FF6B35}
+.contact-form select option{background:#1a1a1a;color:#fff}
+.contact-form textarea{resize:vertical;min-height:100px}
+.contact-form button{padding:.9rem 2rem;background:linear-gradient(135deg,#FF6B35,#FF3366);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:.9rem;cursor:pointer;text-transform:uppercase;letter-spacing:.05em;transition:transform .3s,box-shadow .3s}
+.contact-form button:hover{transform:scale(1.02);box-shadow:0 0 30px rgba(255,107,53,.25)}
+
+footer{background:linear-gradient(180deg,#0a0a0a,#050505);border-top:1px solid rgba(255,255,255,.04);padding:3rem 2rem 1.5rem}
+.footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem}
+footer h4{font-family:'Archivo Black',sans-serif;font-size:1rem;margin-bottom:.8rem}
+footer h4 em{font-style:normal;background:linear-gradient(135deg,#FF6B35,#FF3366);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+footer p{color:rgba(255,255,255,.4);font-size:.82rem;line-height:1.6}
+footer ul{list-style:none}
+footer ul li{margin-bottom:.5rem}
+footer ul li a{color:rgba(255,255,255,.4);text-decoration:none;font-size:.82rem;transition:color .3s}
+footer ul li a:hover{color:#fff}
+footer .social{display:flex;gap:.8rem;margin-top:.8rem}
+footer .social a{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);text-decoration:none;transition:background .3s,color .3s;font-size:.85rem}
+footer .social a:hover{background:#FF6B35;color:#fff}
+footer .bottom{max-width:1200px;margin:2rem auto 0;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.04);text-align:center;color:rgba(255,255,255,.25);font-size:.75rem}
+
+.toast-container{position:fixed;bottom:2rem;right:2rem;z-index:1000;display:flex;flex-direction:column;gap:.5rem}
+.toast{padding:1rem 1.5rem;border-radius:8px;font-size:.85rem;font-weight:600;transform:translateX(120%);opacity:0;transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .4s;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.toast.show{transform:translateX(0);opacity:1}
+.toast.success{background:linear-gradient(135deg,#FF6B35,#FF3366);color:#fff}
+.toast.error{background:#e74c3c;color:#fff}
+.toast.info{background:rgba(255,255,255,.1);backdrop-filter:blur(12px);color:#fff;border:1px solid rgba(255,255,255,.08)}
+
+.admin-panel{min-height:80vh;padding:2rem}
+.admin-panel .admin-login{max-width:400px;margin:4rem auto;text-align:center}
+.admin-panel .admin-login h2{font-family:'Archivo Black',sans-serif;font-size:2rem;margin-bottom:2rem}
+.admin-panel .admin-login form{display:flex;flex-direction:column;gap:1rem}
+.admin-panel .admin-login input{padding:.9rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-size:.9rem;outline:none}
+.admin-panel .admin-login input:focus{border-color:#FF6B35}
+.admin-panel .admin-login button{padding:.9rem;background:linear-gradient(135deg,#FF6B35,#FF3366);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer}
+.admin-dashboard{max-width:1200px;margin:0 auto}
+.admin-dashboard h2{font-family:'Archivo Black',sans-serif;font-size:2rem;margin-bottom:.3rem}
+.admin-dashboard .admin-sub{color:rgba(255,255,255,.4);font-size:.9rem;margin-bottom:2rem}
+.admin-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+.admin-stat-card{padding:1.5rem;border:1px solid rgba(255,255,255,.06);border-radius:12px;background:rgba(255,255,255,.02)}
+.admin-stat-card .admin-stat-num{font-family:'Archivo Black',sans-serif;font-size:2rem;background:linear-gradient(135deg,#FF6B35,#FF3366);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.admin-stat-card .admin-stat-label{color:rgba(255,255,255,.45);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;margin-top:.3rem}
+.admin-table{width:100%;border-collapse:collapse;font-size:.85rem;border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow:hidden}
+.admin-table th{background:rgba(255,255,255,.04);padding:.8rem 1rem;text-align:left;font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:.7rem;color:rgba(255,255,255,.5);border-bottom:1px solid rgba(255,255,255,.06)}
+.admin-table td{padding:.7rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);color:rgba(255,255,255,.6)}
+.admin-table tr:hover td{background:rgba(255,255,255,.02)}
+.admin-table .contacted-tag{display:inline-block;padding:.2rem .6rem;border-radius:4px;font-size:.75rem;font-weight:600}
+.admin-table .contacted-tag.yes{background:rgba(46,204,113,.15);color:#2ecc71}
+.admin-table .contacted-tag.no{background:rgba(255,107,53,.15);color:#FF6B35}
+.admin-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;padding:.4rem .8rem;border-radius:6px;cursor:pointer;font-size:.75rem;transition:background .3s}
+.admin-btn:hover{background:rgba(255,255,255,.12)}
+.admin-logout{position:absolute;top:2rem;right:2rem;background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);padding:.5rem 1rem;border-radius:6px;cursor:pointer;font-size:.8rem;transition:color .3s}
+
+@media(max-width:900px){
+.about-grid{grid-template-columns:1fr;gap:2rem}
+.plans-grid{grid-template-columns:1fr;gap:1rem}
+.contact-grid{grid-template-columns:1fr;gap:2rem}
+.footer-grid{grid-template-columns:1fr 1fr}
+.overlay-3 .stats{gap:1.5rem;flex-direction:column;align-items:center}
+}
+@media(max-width:768px){
+.pin-container{height:400vh}
+nav{padding:0 1rem}
+.nav-links{position:fixed;top:64px;left:0;right:0;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);flex-direction:column;padding:1.5rem 2rem;gap:1.2rem;transform:translateY(-120%);transition:transform .4s cubic-bezier(.16,1,.3,1);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-links.open{transform:translateY(0)}
+.nav-toggle{display:flex}
+.overlay-1 .brand{font-size:clamp(3rem,18vw,5rem)}
+.overlay-3 .stats{gap:1rem}
+.footer-grid{grid-template-columns:1fr}
+.section{padding:3rem 1rem}
+.trainers-grid{grid-template-columns:1fr 1fr}
+.testimonials-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+.trainers-grid{grid-template-columns:1fr}
+.schedule-table{font-size:.75rem}
+.schedule-table th,.schedule-table td{padding:.5rem .3rem}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<nav>
+    <div class="logo">FUSION<span>GYM</span></div>
+    <button class="nav-toggle" id="navToggle" aria-label="Menú">
+        <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#about" data-nav>Acerca</a></li>
+        <li><a href="#plans" data-nav>Planes</a></li>
+        <li><a href="#schedule" data-nav>Horarios</a></li>
+        <li><a href="#trainers" data-nav>Entrenadores</a></li>
+        <li><a href="#testimonials" data-nav>Testimonios</a></li>
+        <li><a href="#contact" data-nav>Contacto</a></li>
+        <li><a href="#admin">Admin</a></li>
+    </ul>
+</nav>
+
+<div class="pin-container">
+    <div class="pin-element">
+        <video id="scrub-video" src="../videos/gym.mp4" muted playsinline preload="auto"></video>
+        <div class="gradient-overlay"></div>
+        <div class="grit-overlay"></div>
+        <div class="overlay">
+            <div class="overlay-text overlay-1" id="text1">
+                <div class="brand">FUSION</div>
+                <div class="tagline">Alto Rendimiento</div>
+            </div>
+            <div class="overlay-text overlay-2" id="text2">
+                <h2>Supera tus<br><em>límites</em></h2>
+                <p>Entrenamiento de élite con coaches profesionales y tecnología de vanguardia.</p>
+            </div>
+            <div class="overlay-text overlay-3" id="text3">
+                <div class="stats">
+                    <div class="stat">12<sub>+</sub><span>Coaches</span></div>
+                    <div class="stat">500<sub>+</sub><span>Miembros</span></div>
+                    <div class="stat">4.9<span>Rating</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-hint" id="scrollHint">
+            <span>Desplázate</span>
+            <div class="arrow"></div>
+        </div>
+    </div>
+</div>
+
+<section class="section" id="about">
+    <div class="section-header">
+        <h2>Acerca de <em>FUSION</em></h2>
+        <p>Más que un gimnasio. Una comunidad de alto rendimiento.</p>
+    </div>
+    <div class="about-grid">
+        <div class="about-text">
+            <p>FUSION GYM nació en 2019 con una visión clara: romper el molde de los gimnasios tradicionales. Fundado por atletas de élite, nuestro espacio combina entrenamiento funcional, tecnología de punta y una filosofía de superación constante.</p>
+            <p>No somos un gimnasio para cualquiera. Somos para los que quieren más. Para los que buscan transformar no solo su cuerpo, sino su mentalidad. Cada rincón de FUSION está diseñado para empujarte al límite.</p>
+            <p>Desde CrossFit hasta yoga, pasando por boxeo y entrenamiento de fuerza, nuestro equipo de 12 coaches certificados te guiará en cada paso del camino.</p>
+        </div>
+        <div class="about-stats">
+            <div class="about-stat"><div class="num">12+</div><div class="label">Coaches Elite</div></div>
+            <div class="about-stat"><div class="num">500+</div><div class="label">Miembros Activos</div></div>
+            <div class="about-stat"><div class="num">4.9</div><div class="label">Rating Promedio</div></div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="plans">
+    <div class="section-header">
+        <h2>Planes de <em>Membresía</em></h2>
+        <p>Elige el plan que se adapte a tus objetivos.</p>
+    </div>
+    <div class="plans-grid" id="plansGrid"></div>
+</section>
+
+<section class="section" id="schedule">
+    <div class="section-header">
+        <h2>Horario de <em>Clases</em></h2>
+        <p>Entrena todos los días con nuestros horarios flexibles.</p>
+    </div>
+    <div class="schedule-wrapper">
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>Hora</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                    <th>Sábado</th>
+                    <th>Domingo</th>
+                </tr>
+            </thead>
+            <tbody id="scheduleBody"></tbody>
+        </table>
+    </div>
+</section>
+
+<section class="section" id="trainers">
+    <div class="section-header">
+        <h2>Nuestros <em>Entrenadores</em></h2>
+        <p>Coaches de élite para resultados de élite.</p>
+    </div>
+    <div class="trainers-grid" id="trainersGrid"></div>
+</section>
+
+<section class="section" id="testimonials">
+    <div class="section-header">
+        <h2>Lo que dicen <em>nuestros miembros</em></h2>
+        <p>Resultados reales, historias reales.</p>
+    </div>
+    <div class="testimonials-grid" id="testimonialsGrid"></div>
+</section>
+
+<section class="section" id="contact">
+    <div class="section-header">
+        <h2>Contácta a <em>FUSION</em></h2>
+        <p>Regístrate y comienza tu transformación hoy.</p>
+    </div>
+    <div class="contact-grid">
+        <div class="contact-info">
+            <h3>Comienza tu <em>transformación</em></h3>
+            <p>Déjanos tus datos y uno de nuestros coaches se comunicará contigo para darte una experiencia gratuita en FUSION GYM.</p>
+            <div class="info-item"><span class="icon">📍</span><span class="text">Av. Reforma 245, Col. Juárez, CDMX</span></div>
+            <div class="info-item"><span class="icon">📞</span><span class="text">+52 55 1234 5678</span></div>
+            <div class="info-item"><span class="icon">✉️</span><span class="text">hola@fusiongym.mx</span></div>
+            <div class="info-item"><span class="icon">🕐</span><span class="text">Lun - Vie: 5:00 AM - 11:00 PM &nbsp;|&nbsp; Sáb - Dom: 7:00 AM - 9:00 PM</span></div>
+        </div>
+        <form class="contact-form" id="contactForm">
+            <input type="text" name="name" placeholder="Nombre completo" required>
+            <input type="email" name="email" placeholder="Correo electrónico" required>
+            <input type="tel" name="phone" placeholder="Teléfono" required>
+            <select name="plan" required>
+                <option value="">Plan de interés</option>
+                <option value="Básico">Básico - $299/mes</option>
+                <option value="Pro">Pro - $499/mes</option>
+                <option value="Élite">Élite - $799/mes</option>
+            </select>
+            <textarea name="message" placeholder="¿Alguna pregunta o meta específica?"></textarea>
+            <button type="submit">Enviar registro</button>
+        </form>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-grid">
+        <div>
+            <h4><em>FUSION</em> GYM</h4>
+            <p>Más que un gimnasio. Una comunidad que te impulsa a ser tu mejor versión. Alto rendimiento, resultados reales.</p>
+            <div class="social">
+                <a href="#" aria-label="Instagram">IG</a>
+                <a href="#" aria-label="Facebook">FB</a>
+                <a href="#" aria-label="YouTube">YT</a>
+                <a href="#" aria-label="TikTok">TK</a>
+            </div>
+        </div>
+        <div>
+            <h4>Enlaces</h4>
+            <ul>
+                <li><a href="#about">Acerca</a></li>
+                <li><a href="#plans">Planes</a></li>
+                <li><a href="#schedule">Horarios</a></li>
+                <li><a href="#trainers">Entrenadores</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Membresías</h4>
+            <ul>
+                <li><a href="#plans">Básico</a></li>
+                <li><a href="#plans">Pro</a></li>
+                <li><a href="#plans">Élite</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Contacto</h4>
+            <ul>
+                <li><a href="#contact">Registro</a></li>
+                <li><a href="tel:+525512345678">Llámanos</a></li>
+                <li><a href="mailto:hola@fusiongym.mx">Email</a></li>
+                <li><a href="#admin">Admin Panel</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="bottom">
+        &copy; 2026 FUSION GYM. Todos los derechos reservados.
+    </div>
+</footer>
+
+<section class="admin-panel" id="admin">
+    <div class="admin-login" id="adminLogin">
+        <h2><em style="font-style:normal;background:linear-gradient(135deg,#FF6B35,#FF3366);-webkit-background-clip:text;-webkit-text-fill-color:transparent">FUSION</em> Admin</h2>
+        <form id="loginForm">
+            <input type="text" id="adminUser" placeholder="Usuario" value="admin" required>
+            <input type="password" id="adminPass" placeholder="Contraseña" required>
+            <button type="submit">Ingresar</button>
+        </form>
+    </div>
+    <div class="admin-dashboard" id="adminDashboard" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative">
+            <div>
+                <h2><em style="font-style:normal;background:linear-gradient(135deg,#FF6B35,#FF3366);-webkit-background-clip:text;-webkit-text-fill-color:transparent">FUSION</em> Dashboard</h2>
+                <div class="admin-sub">Panel de control de leads y mensajes</div>
+            </div>
+            <button class="admin-logout" id="logoutBtn">Cerrar sesión</button>
+        </div>
+        <div class="admin-stats" id="adminStats"></div>
+        <h3 style="margin-bottom:1rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.5)">Leads Registrados</h3>
+        <div style="overflow-x:auto">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Plan</th>
+                        <th>Mensaje</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="leadsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const DB = {
+    leads: 'gym_leads',
+    messages: 'gym_messages',
+    get(key) {
+        try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; }
+    },
+    set(key, data) {
+        localStorage.setItem(key, JSON.stringify(data));
+    },
+    addLead(lead) {
+        const leads = this.get(this.leads);
+        lead.id = Date.now() + Math.random().toString(36).slice(2,6);
+        lead.date = new Date().toISOString();
+        lead.contacted = false;
+        leads.push(lead);
+        this.set(this.leads, leads);
+        return lead;
+    },
+    getLeads() {
+        return this.get(this.leads);
+    },
+    toggleContacted(id) {
+        const leads = this.getLeads();
+        const idx = leads.findIndex(l => l.id === id);
+        if (idx !== -1) {
+            leads[idx].contacted = !leads[idx].contacted;
+            this.set(this.leads, leads);
+        }
+        return leads;
+    }
+};
+
+const plans = [
+    {
+        name: 'Básico',
+        price: 299,
+        desc: 'Acceso completo al área de entrenamiento en horario regular.',
+        featured: false,
+        features: ['Acceso a gimnasio 6am-10pm', 'Vestidores y regaderas', 'Evaluación física inicial', 'App de entrenamiento', '1 clase grupal/semana']
+    },
+    {
+        name: 'Pro',
+        price: 499,
+        desc: 'Entrenamiento ilimitado con acceso a todas las instalaciones.',
+        featured: true,
+        features: ['Todo en Básico', 'Acceso 5am-11pm', 'Clases grupales ilimitadas', '1 sesión con coach/mes', 'Nutrición básica', 'Acceso a sauna']
+    },
+    {
+        name: 'Élite',
+        price: 799,
+        desc: 'Experiencia premium con coach personal y beneficios exclusivos.',
+        featured: false,
+        features: ['Todo en Pro', 'Coach personal 2x/sem', 'Nutrición personalizada', 'Acceso 24/7', 'Estacionamiento gratis', 'Acceso a eventos VIP', 'Plan de recuperación']
+    }
+];
+
+const scheduleData = [
+    { time: '6:00 AM', mon: 'CrossFit', tue: 'Yoga Flow', wed: 'Boxeo', thu: 'HIIT', fri: 'CrossFit', sat: 'Yoga Flow', sun: null },
+    { time: '7:00 AM', mon: 'HIIT', tue: 'Spinning', wed: 'CrossFit', thu: 'Yoga Flow', fri: 'HIIT', sat: 'Spinning', sun: null },
+    { time: '8:00 AM', mon: 'Boxeo', tue: 'CrossFit', wed: 'Spinning', thu: 'Fuerza', fri: 'Boxeo', sat: 'CrossFit', sun: 'Yoga' },
+    { time: '9:00 AM', mon: 'Yoga Flow', tue: 'HIIT', wed: 'Fuerza', thu: 'CrossFit', fri: 'Yoga Flow', sat: 'HIIT', sun: null },
+    { time: '10:00 AM', mon: 'Spinning', tue: 'Boxeo', wed: 'HIIT', thu: 'Spinning', fri: 'Fuerza', sat: null, sun: null },
+    { time: '12:00 PM', mon: 'Fuerza', tue: null, wed: 'Yoga Flow', thu: null, fri: 'Spinning', sat: null, sun: null },
+    { time: '4:00 PM', mon: 'CrossFit', tue: 'HIIT', wed: 'Boxeo', thu: 'CrossFit', fri: 'HIIT', sat: null, sun: null },
+    { time: '5:00 PM', mon: 'HIIT', tue: 'CrossFit', wed: 'Spinning', thu: 'Boxeo', fri: 'Yoga Flow', sat: 'Boxeo', sun: null },
+    { time: '6:00 PM', mon: 'Boxeo', tue: 'Yoga Flow', wed: 'CrossFit', thu: 'HIIT', fri: 'CrossFit', sat: 'Spinning', sun: null },
+    { time: '7:00 PM', mon: 'Spinning', tue: 'Fuerza', wed: 'HIIT', thu: 'Spinning', fri: 'Boxeo', sat: null, sun: null },
+    { time: '8:00 PM', mon: 'Yoga Flow', tue: null, wed: null, thu: 'Yoga Flow', fri: null, sat: null, sun: null }
+];
+
+const scheduleTrainers = {
+    'CrossFit': 'Marco', 'Yoga Flow': 'Elena', 'Boxeo': 'Carlos', 'HIIT': 'Ana',
+    'Spinning': 'Luis', 'Fuerza': 'Pedro', 'Yoga': 'Elena'
+};
+
+const trainers = [
+    { name: 'Marco Rentería', specialty: 'CrossFit & Funcional', photo: 'https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=600', desc: 'Ex-atleta olímpico con 10 años de experiencia. Certificado Level 3 en CrossFit.' },
+    { name: 'Ana Sofía Ruiz', specialty: 'HIIT & Cardio', photo: 'https://images.pexels.com/photos/416809/pexels-photo-416809.jpeg?auto=compress&cs=tinysrgb&w=600', desc: 'Especialista en entrenamiento de alta intensidad. Coach certificada NASM.' },
+    { name: 'Carlos Mendoza', specialty: 'Boxeo & MMA', photo: 'https://images.pexels.com/photos/861180/pexels-photo-861180.jpeg?auto=compress&cs=tinysrgb&w=600', desc: 'Campeón nacional de boxeo amateur. 8 años dando clases de combate.' },
+    { name: 'Elena Vargas', specialty: 'Yoga & Flexibilidad', photo: 'https://images.pexels.com/photos/2780762/pexels-photo-2780762.jpeg?auto=compress&cs=tinysrgb&w=600', desc: 'Instructora de yoga certificada RYT-500. Especialista en movilidad y respiración.' },
+    { name: 'Luis Torres', specialty: 'Spinning & Resistencia', photo: 'https://images.pexels.com/photos/317155/pexels-photo-317155.jpeg?auto=compress&cs=tinysrgb&w=600', desc: 'Coach de ciclismo indoor. Más de 3000 horas de clase impartidas.' },
+    { name: 'Pedro Castillo', specialty: 'Fuerza & Powerlifting', photo: 'https://images.pexels.com/photos/260447/pexels-photo-260447.jpeg?auto=compress&cs=tinysrgb&w=600', desc: 'Powerlifter competitivo. Récord nacional en peso muerto categoría -90kg.' }
+];
+
+const testimonials = [
+    { text: 'FUSION cambió mi vida. Bajé 15kg en 4 meses y descubrí una fuerza que no sabía que tenía. Los coaches son increíbles.', author: 'Andrea Méndez', title: 'Miembro desde 2022', photo: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150' },
+    { text: 'El ambiente es electrizante. Cada clase te reta a dar más. Desde que entré a FUSION mi rendimiento físico se duplicó.', author: 'Diego Hernández', title: 'Miembro Pro', photo: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150' },
+    { text: 'El plan Élite con coach personal fue la mejor inversión. La atención es personalizada y los resultados hablan solos.', author: 'Valeria Ortiz', title: 'Miembro Élite', photo: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150' },
+    { text: 'Las instalaciones son de primera. El horario 24/7 del plan Élite me permite entrenar cuando mi agenda lo permite.', author: 'Ricardo Navarro', title: 'Miembro desde 2023', photo: 'https://images.pexels.com/photos/1680172/pexels-photo-1680172.jpeg?auto=compress&cs=tinysrgb&w=150' }
+];
+
+function renderPlans() {
+    const grid = document.getElementById('plansGrid');
+    grid.innerHTML = plans.map(p => `
+        <div class="plan-card${p.featured?' featured':''}">
+            ${p.featured?'<div class="badge">Más popular</div>':''}
+            <div class="plan-name">${p.name}</div>
+            <div class="plan-price">$${p.price}<small>/mes</small></div>
+            <div class="plan-desc">${p.desc}</div>
+            <ul class="plan-features">${p.features.map(f => `<li>${f}</li>`).join('')}</ul>
+            <a href="#contact" class="plan-btn">Elegir ${p.name}</a>
+        </div>
+    `).join('');
+}
+
+function renderSchedule() {
+    const days = ['mon','tue','wed','thu','fri','sat','sun'];
+    const tbody = document.getElementById('scheduleBody');
+    tbody.innerHTML = scheduleData.map(row => {
+        const cells = days.map(d => {
+            const cls = row[d];
+            if (!cls) return '<td>—</td>';
+            const trainer = scheduleTrainers[cls] || '';
+            return `<td class="highlight"><span class="class-name">${cls}</span>${trainer?'<span class="trainer-name">'+trainer+'</span>':''}</td>`;
+        });
+        return `<tr><td class="time">${row.time}</td>${cells.join('')}</tr>`;
+    }).join('');
+}
+
+function renderTrainers() {
+    const grid = document.getElementById('trainersGrid');
+    grid.innerHTML = trainers.map(t => `
+        <div class="trainer-card">
+            <img src="${t.photo}" alt="${t.name}" loading="lazy">
+            <div class="trainer-body">
+                <div class="trainer-name">${t.name}</div>
+                <div class="trainer-specialty">${t.specialty}</div>
+                <div class="trainer-desc">${t.desc}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderTestimonials() {
+    const grid = document.getElementById('testimonialsGrid');
+    grid.innerHTML = testimonials.map(t => `
+        <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <blockquote>"${t.text}"</blockquote>
+            <div class="author">
+                <img src="${t.photo}" alt="${t.author}" loading="lazy">
+                <div><div class="name">${t.author}</div><div class="title">${t.title}</div></div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+    }, 3500);
+}
+
+// Scroll video scrubbing
+(function() {
+    const video = document.getElementById('scrub-video');
+    const progressBar = document.getElementById('progressBar');
+    const text1 = document.getElementById('text1');
+    const text2 = document.getElementById('text2');
+    const text3 = document.getElementById('text3');
+    const scrollHint = document.getElementById('scrollHint');
+    let ticking = false;
+    let videoReady = false;
+
+    video.addEventListener('loadedmetadata', () => {
+        video.currentTime = 0.01;
+        videoReady = true;
+    });
+
+    video.addEventListener('error', () => {
+        console.warn('Video load error, using fallback');
+    });
+
+    function scrub() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? Math.min(Math.max(scrollTop / docHeight, 0), 1) : 0;
+
+        if (videoReady && video.duration) {
+            video.currentTime = progress * video.duration;
+        }
+        progressBar.style.width = (progress * 100) + '%';
+
+        const t = progress;
+
+        text1.style.opacity = t < 0.25 ? 1 - t / 0.25 : 0;
+        text1.style.transform = `translateY(${t * 40}px) scale(${1 - t * 0.1})`;
+
+        text2.style.opacity = t < 0.2 ? 0 : t < 0.35 ? (t - 0.2) / 0.15 : t < 0.65 ? 1 : Math.max(0, 1 - (t - 0.65) / 0.1);
+        text2.style.transform = `translateY(${t < 0.2 ? 40 : 0}px)`;
+
+        text3.style.opacity = t < 0.6 ? 0 : Math.min((t - 0.6) / 0.15, 1);
+        text3.style.transform = `translateY(${t < 0.6 ? 40 : 0}px)`;
+
+        scrollHint.style.opacity = t < 0.05 ? 1 - t / 0.05 : 0;
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(scrub);
+            ticking = true;
+        }
+    }, { passive: true });
+    scrub();
+})();
+
+// Nav toggle
+(function() {
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => {
+        links.classList.toggle('open');
+        toggle.classList.toggle('active');
+    });
+    document.querySelectorAll('[data-nav]').forEach(a => {
+        a.addEventListener('click', () => {
+            links.classList.remove('open');
+            toggle.classList.remove('active');
+        });
+    });
+})();
+
+// Contact form
+(function() {
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const data = { name: form.name.value, email: form.email.value, phone: form.phone.value, plan: form.plan.value, message: form.message.value };
+        DB.addLead(data);
+        DB.get('gym_messages');
+        showToast('¡Registro exitoso! Un coach te contactará pronto.', 'success');
+        form.reset();
+    });
+})();
+
+// Admin
+(function() {
+    const loginForm = document.getElementById('loginForm');
+    const loginDiv = document.getElementById('adminLogin');
+    const dashboard = document.getElementById('adminDashboard');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const leadsBody = document.getElementById('leadsTableBody');
+    const statsDiv = document.getElementById('adminStats');
+    let loggedIn = false;
+
+    function renderAdmin() {
+        const leads = DB.getLeads();
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const monthLeads = leads.filter(l => new Date(l.date) >= monthStart);
+        const contacted = leads.filter(l => l.contacted).length;
+        const conversion = leads.length > 0 ? Math.round((contacted / leads.length) * 100) : 0;
+
+        statsDiv.innerHTML = `
+            <div class="admin-stat-card"><div class="admin-stat-num">${leads.length}</div><div class="admin-stat-label">Total Leads</div></div>
+            <div class="admin-stat-card"><div class="admin-stat-num">${monthLeads.length}</div><div class="admin-stat-label">Leads del Mes</div></div>
+            <div class="admin-stat-card"><div class="admin-stat-num">${conversion}%</div><div class="admin-stat-label">Tasa Contacto</div></div>
+            <div class="admin-stat-card"><div class="admin-stat-num">${contacted}</div><div class="admin-stat-label">Contactados</div></div>
+        `;
+
+        if (leads.length === 0) {
+            leadsBody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:rgba(255,255,255,.3)">No hay leads registrados aún.</td></tr>';
+            return;
+        }
+
+        leadsBody.innerHTML = leads.sort((a,b) => new Date(b.date) - new Date(a.date)).map(l => `
+            <tr>
+                <td>${l.name}</td>
+                <td>${l.email}</td>
+                <td>${l.phone}</td>
+                <td>${l.plan}</td>
+                <td>${l.message || '—'}</td>
+                <td>${new Date(l.date).toLocaleDateString('es-MX')}</td>
+                <td><span class="contacted-tag ${l.contacted?'yes':'no'}">${l.contacted?'Sí':'No'}</span></td>
+                <td><button class="admin-btn" data-id="${l.id}">${l.contacted?'Desmarcar':'Marcar Contactado'}</button></td>
+            </tr>
+        `).join('');
+
+        leadsBody.querySelectorAll('[data-id]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                DB.toggleContacted(btn.dataset.id);
+                renderAdmin();
+            });
+        });
+    }
+
+    loginForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const user = document.getElementById('adminUser').value.trim();
+        const pass = document.getElementById('adminPass').value.trim();
+        if (user === 'admin' && pass === 'admin123') {
+            loggedIn = true;
+            loginDiv.style.display = 'none';
+            dashboard.style.display = 'block';
+            renderAdmin();
+        } else {
+            showToast('Credenciales incorrectas', 'error');
+        }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+        loggedIn = false;
+        dashboard.style.display = 'none';
+        loginDiv.style.display = 'block';
+        document.getElementById('adminPass').value = '';
+    });
+
+    const hash = location.hash === '#admin' ? '#admin' : '';
+    if (hash === '#admin') setTimeout(() => document.getElementById('admin').scrollIntoView(), 100);
+
+    window.addEventListener('hashchange', () => {
+        if (location.hash === '#admin') {
+            document.getElementById('admin').scrollIntoView();
+        }
+    });
+})();
+
+renderPlans();
+renderSchedule();
+renderTrainers();
+renderTestimonials();
+</script>
+</body>
+</html>
