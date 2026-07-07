@@ -173,6 +173,24 @@ footer .bottom{max-width:1200px;margin:2rem auto 0;padding-top:1.5rem;border-top
 .admin-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;padding:.4rem .8rem;border-radius:6px;cursor:pointer;font-size:.75rem;transition:background .3s}
 .admin-btn:hover{background:rgba(255,255,255,.12)}
 .admin-logout{position:absolute;top:2rem;right:2rem;background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);padding:.5rem 1rem;border-radius:6px;cursor:pointer;font-size:.8rem;transition:color .3s}
+.admin-tabs{display:flex;gap:0;margin-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.admin-tabs button{padding:.7rem 1.5rem;background:transparent;border:none;color:rgba(255,255,255,.4);font-size:.85rem;cursor:pointer;border-bottom:2px solid transparent;transition:.3s;font-family:'Inter',sans-serif}
+.admin-tabs button:hover{color:#fff}
+.admin-tabs button.active{color:#FF6B35;border-bottom-color:#FF6B35}
+.admin-tab-content{display:none}
+.admin-tab-content.active{display:block}
+.config-section{padding:1.5rem;background:rgba(255,255,255,.02);border-radius:1rem;border:1px solid rgba(255,255,255,.06);margin-bottom:1.5rem}
+.config-section h3{font-size:1.2rem;margin-bottom:1rem}
+.config-section .config-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:.8rem}
+.config-section .config-row label{font-size:.8rem;color:rgba(255,255,255,.45);min-width:120px}
+.config-section .config-row input{flex:1;min-width:200px;padding:.6rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.5rem;color:#fff;font-size:.85rem}
+.config-key{font-family:monospace;font-size:.8rem;padding:.4rem .8rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.3rem;color:#FF6B35;word-break:break-all}
+.btn-primary{background:linear-gradient(135deg,#FF6B35,#FF3366);color:#fff;border:none;border-radius:6px;font-weight:600;cursor:pointer;transition:transform .3s,box-shadow .3s;font-family:'Inter',sans-serif}
+.btn-primary:hover{transform:scale(1.02);box-shadow:0 0 20px rgba(255,107,53,.25)}
+.btn-outline{background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);border-radius:6px;cursor:pointer;font-weight:500;transition:background .3s,color .3s;font-family:'Inter',sans-serif}
+.btn-outline:hover{background:rgba(255,255,255,.05);color:#fff}
+.btn-danger{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);color:#e74c3c;border-radius:6px;cursor:pointer;font-weight:600;padding:.7rem 1.5rem;font-size:.85rem;transition:background .3s;font-family:'Inter',sans-serif}
+.btn-danger:hover{background:rgba(231,76,60,.25)}
 
 @media(max-width:900px){
 .about-grid{grid-template-columns:1fr;gap:2rem}
@@ -408,24 +426,46 @@ nav{padding:0 1rem}
             </div>
             <button class="admin-logout" id="logoutBtn">Cerrar sesión</button>
         </div>
-        <div class="admin-stats" id="adminStats"></div>
-        <h3 style="margin-bottom:1rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.5)">Leads Registrados</h3>
-        <div style="overflow-x:auto">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>Plan</th>
-                        <th>Mensaje</th>
-                        <th>Fecha</th>
-                        <th>Estado</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="leadsTableBody"></tbody>
-            </table>
+        <div class="admin-tabs">
+            <button class="active" onclick="switchAdminTab('leads', this)">📋 Leads</button>
+            <button onclick="switchAdminTab('config', this)">⚙️ Configuración</button>
+        </div>
+        <div class="admin-tab-content active" id="tabLeads">
+            <div class="admin-stats" id="adminStats"></div>
+            <h3 style="margin-bottom:1rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.5)">Leads Registrados</h3>
+            <div style="overflow-x:auto">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Plan</th>
+                            <th>Mensaje</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leadsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="admin-tab-content" id="tabConfig">
+            <div class="config-section">
+                <h3>🔑 API Key — Acceso para IA</h3>
+                <p style="color:rgba(255,255,255,.4);font-size:0.85rem;margin-bottom:1rem;">Usa esta clave para que sistemas externos (IA, automatización) accedan al CRM.</p>
+                <div class="config-row"><label>API Key</label><div class="config-key" id="apiKeyDisplay">——</div><button class="btn-primary" style="padding:0.4rem 1rem;font-size:0.8rem;" onclick="regenerateApiKey()">Regenerar</button></div>
+                <div class="config-row" style="margin-top:0.8rem;"><label></label><button class="btn-outline" style="padding:0.4rem 1rem;font-size:0.8rem;" onclick="exportData()">📦 Exportar JSON</button><button class="btn-outline" style="padding:0.4rem 1rem;font-size:0.8rem;" onclick="copyApiKey()">📋 Copiar Key</button></div>
+            </div>
+            <div class="config-section">
+                <h3>🤖 Integración con IA</h3>
+                <div class="config-row"><label>Webhook URL</label><input type="url" id="webhookUrl" placeholder="https://tu-servicio.com/api/crm"><button class="btn-primary" style="padding:0.4rem 1rem;font-size:0.8rem;" onclick="saveWebhook()">Guardar</button></div>
+            </div>
+            <div class="config-section">
+                <h3>⚠️ Mantenimiento</h3>
+                <button class="btn-danger" onclick="clearAllData()">🗑️ Borrar todos los datos</button>
+            </div>
         </div>
     </div>
 </section>
@@ -734,6 +774,7 @@ function showToast(message, type = 'success') {
             loginDiv.style.display = 'none';
             dashboard.style.display = 'block';
             renderAdmin();
+            initAdminDashboard();
         } else {
             showToast('Credenciales incorrectas', 'error');
         }
@@ -754,6 +795,80 @@ function showToast(message, type = 'success') {
             document.getElementById('admin').scrollIntoView();
         }
     });
+
+    window.switchAdminTab = function(tabId, btn) {
+        document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.admin-tabs button').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.add('active');
+        btn.classList.add('active');
+    };
+
+    window.getApiKey = function() {
+        let key = localStorage.getItem('gym_api_key');
+        if (!key) {
+            key = 'gym_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2,10);
+            localStorage.setItem('gym_api_key', key);
+        }
+        return key;
+    };
+
+    window.regenerateApiKey = function() {
+        const key = 'gym_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2,10);
+        localStorage.setItem('gym_api_key', key);
+        document.getElementById('apiKeyDisplay').textContent = key;
+        showToast('API Key regenerada', 'success');
+    };
+
+    window.copyApiKey = function() {
+        const key = getApiKey();
+        navigator.clipboard.writeText(key).then(() => {
+            showToast('API Key copiada al portapapeles', 'success');
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = key;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            ta.remove();
+            showToast('API Key copiada al portapapeles', 'success');
+        });
+    };
+
+    window.exportData = function() {
+        const data = { leads: DB.getLeads(), exportedAt: new Date().toISOString() };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'fusion-gym-crm-' + new Date().toISOString().slice(0,10) + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Datos exportados', 'success');
+    };
+
+    window.saveWebhook = function() {
+        const url = document.getElementById('webhookUrl').value.trim();
+        if (!url) { showToast('Ingresa una URL válida', 'error'); return; }
+        localStorage.setItem('gym_webhook', url);
+        showToast('Webhook guardado', 'success');
+    };
+
+    window.clearAllData = function() {
+        if (!confirm('¿Estás seguro? Se borrarán todos los leads y datos del CRM.')) return;
+        localStorage.removeItem('gym_leads');
+        localStorage.removeItem('gym_messages');
+        showToast('Todos los datos han sido eliminados', 'info');
+        renderAdmin();
+    };
+
+    function initAdminDashboard() {
+        const key = getApiKey();
+        document.getElementById('apiKeyDisplay').textContent = key;
+        const webhook = localStorage.getItem('gym_webhook');
+        if (webhook) document.getElementById('webhookUrl').value = webhook;
+    }
 })();
 
 renderPlans();
